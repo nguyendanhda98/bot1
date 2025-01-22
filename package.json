@@ -19,11 +19,15 @@
     "discord.js": "^14.17.3",
     "distube": "^5.0.4",
     "dotenv": "^16.4.7",
+    "module-alias": "^2.2.3",
     "sodium-native": "^4.3.1",
     "yt-dlp-exec": "^1.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
     "eslint": "^9.18.0"
+  },
+  "_moduleAliases": {
+    "@utils": "utils"
   }
 }
