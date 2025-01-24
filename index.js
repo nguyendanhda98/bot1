@@ -48,19 +48,31 @@ for (const folder of commandFolders) {
   }
 }
 
-const eventsPath = path.join(__dirname, "events");
-const eventFiles = fs
-  .readdirSync(eventsPath)
+const eventsClientPath = path.join(__dirname, "events", "client");
+const eventClientFiles = fs
+  .readdirSync(eventsClientPath)
   .filter((file) => file.endsWith(".js"));
 
-for (const file of eventFiles) {
-  const filePath = path.join(eventsPath, file);
+for (const file of eventClientFiles) {
+  const filePath = path.join(eventsClientPath, file);
   const event = require(filePath);
   if (event.once) {
     client.once(event.name, (...args) => event.execute(...args));
   } else {
     client.on(event.name, (...args) => event.execute(distube, ...args));
   }
+}
+
+const eventsDistubePath = path.join(__dirname, "events", "distube");
+const eventDistubeFiles = fs
+  .readdirSync(eventsDistubePath)
+  .filter((file) => file.endsWith(".js"));
+
+for (const file of eventDistubeFiles) {
+  const filePath = path.join(eventsDistubePath, file);
+  const event = require(filePath);
+
+  distube.on(event.name, (...args) => event.execute(...args));
 }
 
 client.login(token);

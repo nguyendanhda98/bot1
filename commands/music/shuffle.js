@@ -10,14 +10,21 @@ module.exports = {
     .setName("shuffle")
     .setDescription("Xáo trộn danh sách phát."),
   async execute(distube, interaction) {
-    if (!validateVoiceChannelRequirements(interaction)) {
-      return;
+    try {
+      await interaction.deferReply();
+      if (!(await validateVoiceChannelRequirements(interaction))) return;
+
+      const queue = distube.getQueue(interaction);
+      if (!(await isQueueExists(queue, interaction))) return;
+
+      queue.shuffle();
+      await interaction.editReply("Đã xáo trộn danh sách phát.");
+    } catch (error) {
+      console.error(error);
+      return await interaction.editReply({
+        content: "An error occurred while shuffling the queue.",
+        ephemeral: true,
+      });
     }
-
-    const queue = distube.getQueue(interaction);
-    if (!(await isQueueExists(queue, interaction))) return;
-
-    queue.shuffle();
-    await interaction.reply("Đã xáo trộn danh sách phát.");
   },
 };

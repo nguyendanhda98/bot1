@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 module.exports = {
   category: "utility",
@@ -6,6 +6,7 @@ module.exports = {
     .setName("help")
     .setDescription("Hiển thị danh sách lệnh."),
   async execute(interaction) {
+    await interaction.deferReply();
     const embed = new EmbedBuilder()
       .setTitle("Commands")
       .setDescription(
@@ -27,6 +28,6 @@ module.exports = {
       )
       .setColor("#FF0000"); // You can set any color you like
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
   },
 };

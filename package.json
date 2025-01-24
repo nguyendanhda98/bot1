@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node -r module-alias/register index.js"
   },
   "keywords": [],
   "author": "",
@@ -11,23 +12,27 @@
   "type": "commonjs",
   "description": "",
   "dependencies": {
+    "@discord-player/extractor": "^7.1.0",
     "@discordjs/opus": "^0.9.0",
     "@discordjs/voice": "^0.18.0",
-    "@distube/youtube": "^1.0.4",
+    "@discordx/music": "^6.3.1",
     "@distube/yt-dlp": "^2.0.1",
-    "@distube/ytsr": "^2.0.4",
+    "discord-music-player": "^9.1.1",
+    "discord-player": "^7.1.0",
+    "discord-player-plus": "^2.0.5",
     "discord.js": "^14.17.3",
     "distube": "^5.0.4",
     "dotenv": "^16.4.7",
     "module-alias": "^2.2.3",
     "sodium-native": "^4.3.1",
-    "yt-dlp-exec": "^1.0.2"
+    "youtube-sr": "^4.3.11"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
     "eslint": "^9.18.0"
   },
   "_moduleAliases": {
-    "@utils": "utils"
+    "@utils": "utils",
+    "@commands": "commands"
   }
 }

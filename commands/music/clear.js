@@ -7,16 +7,24 @@ module.exports = {
   category: "music",
   data: new SlashCommandBuilder()
     .setName("clear")
-    .setDescription("Bật/tắt tự động phát nhạc."),
+    .setDescription("Clear the queue."),
   async execute(distube, interaction) {
+    await interaction.deferReply();
     if (!(await validateVoiceChannelRequirements(interaction))) return;
 
     const queue = distube.getQueue(interaction);
     if (!queue) {
-      await interaction.reply("There is no queue.");
+      await interaction.editReply("There is no queue.");
     } else {
-      queue.remove();
-      await interaction.reply("Queue has been cleared.");
+      try {
+        await queue.remove();
+      } catch (error) {
+        console.error(error);
+        return await interaction.editReply({
+          content: "An error occurred while clearing the queue.",
+          ephemeral: true,
+        });
+      }
     }
   },
 };

@@ -10,14 +10,21 @@ module.exports = {
     .setName("pause")
     .setDescription("Tạm dừng phát nhạc."),
   async execute(distube, interaction) {
-    if (!validateVoiceChannelRequirements(interaction)) {
-      return;
-    }
+    await interaction.deferReply();
+    if (!(await validateVoiceChannelRequirements(interaction))) return;
 
     const queue = distube.getQueue(interaction);
     if (!(await isQueueExists(queue, interaction))) return;
 
-    queue.pause();
-    await interaction.reply("Đã tạm dừng phát nhạc.");
+    try {
+      queue.pause();
+      await interaction.editReply("Đã tạm dừng phát nhạc.");
+    } catch (error) {
+      console.error(error);
+      return await interaction.editReply({
+        content: "An error occurred while pausing the music.",
+        ephemeral: true,
+      });
+    }
   },
 };

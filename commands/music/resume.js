@@ -10,14 +10,21 @@ module.exports = {
     .setName("resume")
     .setDescription("Tiếp tục phát nhạc."),
   async execute(distube, interaction) {
-    if (!validateVoiceChannelRequirements(interaction)) {
-      return;
+    try {
+      await interaction.deferReply();
+      if (!(await validateVoiceChannelRequirements(interaction))) return;
+
+      const queue = distube.getQueue(interaction);
+      if (!(await isQueueExists(queue, interaction))) return;
+
+      queue.resume();
+      await interaction.editReply("Đã tiếp tục phát nhạc.");
+    } catch (error) {
+      console.error(error);
+      return await interaction.editReply({
+        content: "An error occurred while resuming the music.",
+        ephemeral: true,
+      });
     }
-
-    const queue = distube.getQueue(interaction);
-    if (!(await isQueueExists(queue, interaction))) return;
-
-    queue.resume();
-    await interaction.reply("Đã tiếp tục phát nhạc.");
   },
 };

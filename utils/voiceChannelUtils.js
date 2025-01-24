@@ -2,7 +2,12 @@ async function isMemberInVoiceChannel(interaction) {
   const userVoiceChannelId = interaction.member.voice.channelId;
 
   if (!userVoiceChannelId) {
-    await interaction.reply("Bạn cần vào voice channel trước!");
+    if (interaction.deferred || interaction.replied) {
+      await interaction.editReply("Bạn cần vào voice channel trước!");
+    } else {
+      await interaction.deferReply();
+      await interaction.editReply("Bạn cần vào voice channel trước!");
+    }
     return false;
   }
 
@@ -10,10 +15,15 @@ async function isMemberInVoiceChannel(interaction) {
 }
 
 async function isBotInVoiceChannel(interaction) {
-  const botVoiceChannelId = interaction.guild.me.voice.channelId;
+  const botVoiceChannelId = interaction.guild.members.me.voice.channelId;
 
   if (!botVoiceChannelId) {
-    await interaction.reply("Bot cần vào voice channel trước!");
+    if (interaction.deferred || interaction.replied) {
+      await interaction.editReply("Bot cần vào voice channel trước!");
+    } else {
+      await interaction.deferReply();
+      await interaction.editReply("Bot cần vào voice channel trước!");
+    }
     return false;
   }
 
@@ -22,10 +32,16 @@ async function isBotInVoiceChannel(interaction) {
 
 async function isMemberInSameVoiceChannel(interaction) {
   const userVoiceChannelId = interaction.member.voice.channelId;
-  const botVoiceChannelId = interaction.guild.me.voice.channelId;
+  const botVoiceChannelId = interaction.guild.members.me.voice.channelId;
 
   if (userVoiceChannelId !== botVoiceChannelId) {
-    await interaction.reply("Bạn cần vào cùng voice channel với bot!");
+    if (interaction.deferred || interaction.replied) {
+      await interaction.editReply("Bạn cần vào cùng voice channel với bot!");
+    } else {
+      await interaction.deferReply();
+      await interaction.editReply("Bạn cần vào cùng voice channel với bot!");
+    }
+
     return false;
   }
 

@@ -10,24 +10,31 @@ module.exports = {
     .setName("loop")
     .setDescription("Lặp lại danh sách phát."),
   async execute(distube, interaction) {
-    if (!validateVoiceChannelRequirements(interaction)) {
-      return;
-    }
+    await interaction.deferReply();
+    if (!(await validateVoiceChannelRequirements(interaction))) return;
 
     const queue = distube.getQueue(interaction);
     if (!(await isQueueExists(queue, interaction))) return;
 
-    const loop = queue.setRepeatMode();
-    await interaction.reply(
-      `Đã ${
-        loop === 0
-          ? "tắt"
-          : loop === 1
-          ? "bật"
-          : loop === 2
-          ? "lặp lại bài hát hiện tại"
-          : "lặp lại danh sách phát"
-      } lặp lại danh sách phát.`
-    );
+    try {
+      const loop = queue.setRepeatMode();
+      await interaction.editReply(
+        `Đã ${
+          loop === 0
+            ? "tắt"
+            : loop === 1
+            ? "bật"
+            : loop === 2
+            ? "lặp lại bài hát hiện tại"
+            : "lặp lại danh sách phát"
+        } lặp lại danh sách phát.`
+      );
+    } catch (error) {
+      console.error(error);
+      return await interaction.editReply({
+        content: "An error occurred while looping the queue.",
+        ephemeral: true,
+      });
+    }
   },
 };

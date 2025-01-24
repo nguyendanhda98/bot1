@@ -10,17 +10,24 @@ module.exports = {
     .setName("queue")
     .setDescription("Hiển thị danh sách phát."),
   async execute(distube, interaction) {
-    if (!validateVoiceChannelRequirements(interaction)) {
-      return;
+    try {
+      await interaction.deferReply();
+      if (!(await validateVoiceChannelRequirements(interaction))) return;
+
+      const queue = distube.getQueue(interaction);
+      if (!(await isQueueExists(queue, interaction))) return;
+
+      const queueSongs = queue.songs.map((song, index) => {
+        return `${index}. ${song.name} - \`${song.formattedDuration}\``;
+      });
+
+      await interaction.editReply(`Danh sách phát:\n${queueSongs.join("\n")}`);
+    } catch (error) {
+      console.error(error);
+      return await interaction.editReply({
+        content: "An error occurred while getting the queue.",
+        ephemeral: true,
+      });
     }
-
-    const queue = distube.getQueue(interaction);
-    if (!(await isQueueExists(queue, interaction))) return;
-
-    const queueSongs = queue.songs.map((song, index) => {
-      return `${index + 1}. ${song.name} - \`${song.formattedDuration}\``;
-    });
-
-    await interaction.reply(`Danh sách phát:\n${queueSongs.join("\n")}`);
   },
 };

@@ -4,6 +4,28 @@ const { isCommandInCategory } = require("@utils/commandUtils");
 module.exports = {
   name: Events.InteractionCreate,
   async execute(distube, interaction) {
+    if (interaction.isButton()) {
+      const buttonCommand = interaction.client.commands.get(
+        interaction.customId
+      );
+
+      if (buttonCommand) {
+        try {
+          await buttonCommand.execute(distube, interaction);
+        } catch (error) {
+          console.error(error);
+          await interaction.reply({
+            content: "There was an error while executing this button action!",
+            flags: MessageFlags.Ephemeral,
+          });
+        }
+      } else {
+        console.error(`No command matching ${interaction.customId} was found.`);
+      }
+
+      return;
+    }
+
     const command = interaction.client.commands.get(interaction.commandName);
     if (!command) {
       console.error(
@@ -32,7 +54,11 @@ module.exports = {
           });
         }
       }
-    } else if (interaction.isAutocomplete()) {
+
+      return;
+    }
+
+    if (interaction.isAutocomplete()) {
       try {
         if (isCommandInCategory(command, "music")) {
           await command.autocomplete(interaction);
@@ -47,6 +73,8 @@ module.exports = {
           },
         });
       }
+
+      return;
     }
   },
 };

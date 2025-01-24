@@ -6,7 +6,8 @@ module.exports = {
     .setName("ping")
     .setDescription("Replies with Pong!"),
   async execute(distube, interaction) {
+    await interaction.deferReply();
     console.log("🚀 ~ execute ~ interaction:", distube);
-    await interaction.reply("Pong!");
+    await interaction.editReply("Pong!");
   },
 };

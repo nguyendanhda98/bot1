@@ -10,14 +10,20 @@ module.exports = {
     .setName("previous")
     .setDescription("Chuyển đến bài hát trước đó."),
   async execute(distube, interaction) {
-    if (!validateVoiceChannelRequirements(interaction)) {
-      return;
-    }
+    await interaction.deferReply();
+    if (!(await validateVoiceChannelRequirements(interaction))) return;
 
     const queue = distube.getQueue(interaction);
     if (!(await isQueueExists(queue, interaction))) return;
 
-    queue.previous();
-    await interaction.reply("Đã chuyển đến bài hát trước đó.");
+    try {
+      await queue.previous();
+    } catch (error) {
+      console.error(error);
+      return await interaction.editReply({
+        content: "Không có bài hát trước đó!",
+        ephemeral: true,
+      });
+    }
   },
 };

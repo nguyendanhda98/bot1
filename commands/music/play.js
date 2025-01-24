@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
-const ytsr = require("@distube/ytsr");
+const YouTube = require("youtube-sr").default;
+
 const {
   isMemberInSameVoiceChannel,
   isMemberInVoiceChannel,
@@ -33,16 +34,13 @@ module.exports = {
       if (!query) {
         return interaction.respond([]);
       }
-      const searchResult = await ytsr(query, { limit: 10 });
-      const choices = searchResult.items
-        .filter((item) => item.type === "video")
-        .map((item) => ({
-          name: `${item.name.substring(0, 89)} - ${item.duration}`.substring(
-            0,
-            100
-          ),
-          value: item.url,
-        }));
+      const songs = await YouTube.search(query, { limit: 10 });
+      const choices = songs.map((item) => ({
+        name: `${item.title.substring(0, 89)} - ${
+          item.durationFormatted
+        }`.substring(0, 100),
+        value: item.url,
+      }));
 
       await interaction.respond(choices);
     } catch (error) {
@@ -51,6 +49,7 @@ module.exports = {
     }
   },
   async execute(distube, interaction) {
+    await interaction.deferReply();
     const member = interaction.member;
     const botMember = interaction.guild.members.me;
     const voiceChannelMember = member.voice.channel;
@@ -69,12 +68,11 @@ module.exports = {
 
     const query = interaction.options.getString("song");
     if (!query)
-      return interaction.reply(
+      return interaction.editReply(
         "Bạn cần cung cấp tên bài hát hoặc link youtube!"
       );
 
     try {
-      await interaction.deferReply();
       //check if query is a link
       if (query.match(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/)) {
         await distube.play(voiceChannelMember, query, {
@@ -82,19 +80,27 @@ module.exports = {
           member,
         });
       }
+      // check if query is a playlist. Not supported yet
+      else if (
+        query.match(
+          /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/playlist\?list=.+$/
+        )
+      ) {
+        return interaction.editReply("Playlists are not supported yet!");
+      }
       //search for the song
       else {
-        const searchResult = await ytsr(query, { limit: 1 });
-        if (searchResult.items.length === 0) {
-          return interaction.channel.send("No results found!");
+        const song = await YouTube.searchOne(query);
+        if (!song) {
+          return interaction.editReply("No results found!");
         }
-        const song = searchResult.items[0];
+
         await distube.play(voiceChannelMember, song.url, {
           textChannel: interaction.channel,
           member,
         });
       }
-      return interaction.editReply("Đã phát nhạc!");
+      return interaction.editReply("Đã thêm bài hát vào hàng chờ!");
     } catch (error) {
       console.error(error);
       return interaction.editReply("Đã xảy ra lỗi khi phát nhạc!");

@@ -16,6 +16,7 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(distube, interaction) {
+    await interaction.deferReply();
     if (!(await validateVoiceChannelRequirements(interaction))) return;
 
     const queue = distube.getQueue(interaction);
@@ -25,11 +26,18 @@ module.exports = {
     const queueLength = queue.songs.length;
 
     if (index === 0 || index > queueLength || index < -queueLength) {
-      await interaction.reply("Invalid song index.");
+      await interaction.editReply("Invalid song index.");
       return;
     }
 
-    queue.jump(index);
-    await interaction.reply(`Jumped to song at index ${index}`);
+    try {
+      await queue.jump(index);
+      await interaction.editReply(`Jumped to song at index ${index}`);
+    } catch (error) {
+      console.error(error);
+      await interaction.editReply(
+        "An error occurred while jumping to the song."
+      );
+    }
   },
 };

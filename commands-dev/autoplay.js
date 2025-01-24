@@ -10,12 +10,16 @@ module.exports = {
     .setName("autoplay")
     .setDescription("Bật/tắt tự động phát nhạc."),
   async execute(distube, interaction) {
+    await interaction.deferReply();
     if (!(await validateVoiceChannelRequirements(interaction))) return;
 
     const queue = distube.getQueue(interaction);
-    if (!isQueueExists(queue, interaction)) return;
+    if (!(await isQueueExists(queue, interaction))) return;
 
-    queue.autoplay = !queue.autoplay;
-    await interaction.reply(`Autoplay is now ${queue.autoplay ? "on" : "off"}`);
+    const autoplay = queue.toggleAutoplay();
+
+    await interaction.editReply(
+      `Tự động phát nhạc đã được ${autoplay ? "bật" : "tắt"}.`
+    );
   },
 };

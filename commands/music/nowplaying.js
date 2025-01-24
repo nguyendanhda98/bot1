@@ -10,16 +10,23 @@ module.exports = {
     .setName("nowplaying")
     .setDescription("Hiển thị bài hát đang phát."),
   async execute(distube, interaction) {
-    if (!validateVoiceChannelRequirements(interaction)) {
-      return;
-    }
+    await interaction.deferReply();
+    if (!(await validateVoiceChannelRequirements(interaction))) return;
 
     const queue = distube.getQueue(interaction);
     if (!(await isQueueExists(queue, interaction))) return;
 
-    const song = queue.songs[0];
-    await interaction.reply(
-      `Đang phát: ${song.name} - \`${song.formattedDuration}\``
-    );
+    try {
+      const song = queue.songs[0];
+      await interaction.editReply(
+        `Đang phát: ${song.name} - \`${song.formattedDuration}\``
+      );
+    } catch (error) {
+      console.error(error);
+      return await interaction.editReply({
+        content: "An error occurred while getting the current song.",
+        ephemeral: true,
+      });
+    }
   },
 };
