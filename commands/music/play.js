@@ -75,12 +75,15 @@ module.exports = {
         );
 
       //check if query is a link
-      if (query.match(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/)) {
+      if (query.match(/^(https?:\/\/[^\s]+)$/)) {
         await distube.play(voiceChannelMember, query, {
           textChannel: interaction.channel,
           member,
         });
-        const song = distube.getQueue(interaction).songs[0];
+        const queue = distube.getQueue(interaction);
+        if (!queue)
+          return await interaction.editReply("Không tìm thấy bài hát!");
+        const song = queue.songs[0];
 
         const embed = interactionEmbed({
           title: "Thêm bài hát.",
@@ -94,14 +97,14 @@ module.exports = {
         await interaction.deleteReply();
         await interaction.channel.send({ embeds: [embed] });
       }
-      // check if query is a playlist. Not supported yet
-      else if (
-        query.match(
-          /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/playlist\?list=.+$/
-        )
-      ) {
-        return interaction.editReply("Playlists are not supported yet!");
-      }
+      // // check if query is a playlist. Not supported yet
+      // else if (
+      //   query.match(
+      //     /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/playlist\?list=.+$/
+      //   )
+      // ) {
+      //   return interaction.editReply("Playlists are not supported yet!");
+      // }
       //search for the song
       else {
         const song = await YouTube.searchOne(query);
