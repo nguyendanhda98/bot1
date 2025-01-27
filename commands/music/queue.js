@@ -1,8 +1,9 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, MessageFlags } = require("discord.js");
 const {
   validateVoiceChannelRequirements,
 } = require("@utils/voiceChannelUtils");
 const { isQueueExists } = require("@utils/music/queueUtils");
+const { interactionEmbed } = require("@utils/embedTemplate");
 
 module.exports = {
   category: "music",
@@ -11,7 +12,7 @@ module.exports = {
     .setDescription("Hiển thị danh sách phát."),
   async execute(distube, interaction) {
     try {
-      await interaction.deferReply();
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       if (!(await validateVoiceChannelRequirements(interaction))) return;
 
       const queue = distube.getQueue(interaction);
@@ -21,9 +22,19 @@ module.exports = {
         return `${index}. ${song.name} - \`${song.formattedDuration}\``;
       });
 
-      await interaction.editReply(`Danh sách phát:\n${queueSongs.join("\n")}`);
+      const embed = interactionEmbed({
+        authorName: interaction.user.globalName
+          ? interaction.user.globalName
+          : interaction.user.username,
+        authoriconURL: interaction.user.displayAvatarURL(),
+        title: "Danh sách phát",
+        description: queueSongs.join("\n"),
+      });
+
+      await interaction.deleteReply();
+      await interaction.channel.send({ embeds: [embed] });
     } catch (error) {
-      console.error(error);
+      console.error("queue.js error: ", error);
       return await interaction.editReply({
         content: "An error occurred while getting the queue.",
         ephemeral: true,

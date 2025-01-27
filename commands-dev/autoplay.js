@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, MessageFlags } = require("discord.js");
 const {
   validateVoiceChannelRequirements,
 } = require("@utils/voiceChannelUtils");
@@ -10,7 +10,7 @@ module.exports = {
     .setName("autoplay")
     .setDescription("Bật/tắt tự động phát nhạc."),
   async execute(distube, interaction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     if (!(await validateVoiceChannelRequirements(interaction))) return;
 
     const queue = distube.getQueue(interaction);

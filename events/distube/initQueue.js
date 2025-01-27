@@ -1,12 +1,12 @@
 const { Events } = require("distube");
 
 module.exports = {
-  name: Events.FINISH_SONG,
+  name: Events.INIT_QUEUE,
   execute(queue) {
     // if (queue && queue.textChannel) {
-    //   queue.textChannel.send("FINISH_SONG");
+    //   queue.textChannel.send("Đang tìm bài hát...");
     // } else {
-    //   console.error("FINISH_SONG error");
+    //   console.error("INIT_QUEUE error");
     // }
   },
 };

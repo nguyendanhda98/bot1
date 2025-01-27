@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 
 module.exports = {
 	category: 'utility',
@@ -10,7 +10,7 @@ module.exports = {
 				.setDescription('The command to reload.')
 				.setRequired(true)),
 	async execute(interaction) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		const commandName = interaction.options.getString('command', true).toLowerCase();
 		const command = interaction.client.commands.get(commandName);
 
@@ -25,7 +25,7 @@ module.exports = {
 	        interaction.client.commands.set(newCommand.data.name, newCommand);
 	        await interaction.editReply(`Command \`${newCommand.data.name}\` was reloaded!`);
 		} catch (error) {
-	        console.error(error);
+	        console.error("reload.js error: ", error);
 	        await interaction.editReply(`There was an error while reloading a command \`${command.data.name}\`:\n\`${error.message}\``);
 		}
 	},

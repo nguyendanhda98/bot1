@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, MessageFlags } = require("discord.js");
 const {
   validateVoiceChannelRequirements,
 } = require("@utils/voiceChannelUtils");
@@ -10,16 +10,16 @@ module.exports = {
     .setName("previous")
     .setDescription("Chuyển đến bài hát trước đó."),
   async execute(distube, interaction) {
-    await interaction.deferReply();
-    if (!(await validateVoiceChannelRequirements(interaction))) return;
-
-    const queue = distube.getQueue(interaction);
-    if (!(await isQueueExists(queue, interaction))) return;
-
     try {
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+      if (!(await validateVoiceChannelRequirements(interaction))) return;
+
+      const queue = distube.getQueue(interaction);
+      if (!(await isQueueExists(queue, interaction))) return;
+
       await queue.previous();
     } catch (error) {
-      console.error(error);
+      console.error("previous.js error: ", error);
       return await interaction.editReply({
         content: "Không có bài hát trước đó!",
         ephemeral: true,

@@ -1,3 +1,5 @@
+const { MessageFlags } = require("discord.js");
+
 async function isMemberInVoiceChannel(interaction) {
   const userVoiceChannelId = interaction.member.voice.channelId;
 
@@ -5,7 +7,7 @@ async function isMemberInVoiceChannel(interaction) {
     if (interaction.deferred || interaction.replied) {
       await interaction.editReply("Bạn cần vào voice channel trước!");
     } else {
-      await interaction.deferReply();
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       await interaction.editReply("Bạn cần vào voice channel trước!");
     }
     return false;
@@ -21,7 +23,7 @@ async function isBotInVoiceChannel(interaction) {
     if (interaction.deferred || interaction.replied) {
       await interaction.editReply("Bot cần vào voice channel trước!");
     } else {
-      await interaction.deferReply();
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       await interaction.editReply("Bot cần vào voice channel trước!");
     }
     return false;
@@ -38,7 +40,7 @@ async function isMemberInSameVoiceChannel(interaction) {
     if (interaction.deferred || interaction.replied) {
       await interaction.editReply("Bạn cần vào cùng voice channel với bot!");
     } else {
-      await interaction.deferReply();
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       await interaction.editReply("Bạn cần vào cùng voice channel với bot!");
     }
 

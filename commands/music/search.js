@@ -1,8 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require("discord.js");
 const YouTube = require("youtube-sr").default;
 
 module.exports = {
-  category: "music",
+  category: "music utility",
   data: new SlashCommandBuilder()
     .setName("search")
     .setDescription("Tìm kiếm bài hát trên youtube.")
@@ -28,13 +28,13 @@ module.exports = {
 
       await interaction.respond(choices);
     } catch (error) {
-      console.error(error);
+      console.error("search.js autocomplete error: ", error);
       await interaction.respond([]);
     }
   },
-  async execute(distube, interaction) {
+  async execute(interaction) {
     try {
-      await interaction.deferReply();
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       const query = interaction.options.getString("song");
       if (!query) {
         return await interaction.editReply("Vui lòng nhập tên bài hát.");
@@ -67,7 +67,7 @@ module.exports = {
 
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
-      console.error(error);
+      console.error("search.js error: ", error);
       return await interaction.editReply({
         content: "An error occurred while searching for the song.",
         ephemeral: true,

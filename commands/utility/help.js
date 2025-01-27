@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require("discord.js");
 
 module.exports = {
   category: "utility",
@@ -6,7 +6,7 @@ module.exports = {
     .setName("help")
     .setDescription("Hiển thị danh sách lệnh."),
   async execute(interaction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     const embed = new EmbedBuilder()
       .setTitle("Commands")
       .setDescription(

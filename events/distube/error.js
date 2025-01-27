@@ -2,12 +2,12 @@ const { Events } = require("distube");
 
 module.exports = {
   name: Events.ERROR,
-
-  execute(client, error) {
-    // thông báo cho người dùng lỗi
-    client.channels.cache
-      .get(client.config.logs.error)
-      .send(`Đã xảy ra lỗi: \`${error}\``);
-    console.error(error);
+  execute(channel, error) {
+    // if (error.errorCode === "NO_UP_NEXT") {
+    //   channel.send("There is no song up next!");
+    // } else {
+    //   console.error(error);
+    //   channel.send(`An error occurred: ${error.message}`);
+    // }
   },
 };

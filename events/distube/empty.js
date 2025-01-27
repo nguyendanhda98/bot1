@@ -4,9 +4,9 @@ module.exports = {
   name: Events.EMPTY,
   execute(queue) {
     if (queue && queue.textChannel) {
-      queue.textChannel.send("The queue is empty.");
+      queue.textChannel.send("Danh sách bài hát trống.");
     } else {
-      console.error("Queue or textChannel is undefined");
+      console.error("EMPTY error");
     }
   },
 };

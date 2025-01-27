@@ -63,7 +63,7 @@ module.exports = {
         );
       }
     } catch (error) {
-      console.error(error);
+      console.error("ready.js error: ", error);
     }
   },
 };

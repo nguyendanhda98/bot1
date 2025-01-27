@@ -1,12 +1,12 @@
 const { Events } = require("distube");
 
 module.exports = {
-  name: Events.DISCONNECT,
+  name: Events.FINISH,
   execute(queue) {
     if (queue && queue.textChannel) {
-      queue.textChannel.send("Bot đã rời voice channel.");
+      queue.textChannel.send("Đã phát hết danh sách bài hát.");
     } else {
-      console.error("DISCONNECT error");
+      console.error("FINISH error");
     }
   },
 };

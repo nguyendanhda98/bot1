@@ -1,8 +1,9 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, MessageFlags } = require("discord.js");
 const {
   validateVoiceChannelRequirements,
 } = require("@utils/voiceChannelUtils");
 const { isQueueExists } = require("@utils/music/queueUtils");
+const { interactionEmbed } = require("@utils/embedTemplate");
 
 module.exports = {
   category: "music",
@@ -10,16 +11,18 @@ module.exports = {
     .setName("loop")
     .setDescription("Lặp lại danh sách phát."),
   async execute(distube, interaction) {
-    await interaction.deferReply();
-    if (!(await validateVoiceChannelRequirements(interaction))) return;
-
-    const queue = distube.getQueue(interaction);
-    if (!(await isQueueExists(queue, interaction))) return;
-
     try {
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+      if (!(await validateVoiceChannelRequirements(interaction))) return;
+
+      const queue = distube.getQueue(interaction);
+      if (!(await isQueueExists(queue, interaction))) return;
+
       const loop = queue.setRepeatMode();
-      await interaction.editReply(
-        `Đã ${
+
+      const embed = interactionEmbed({
+        title: "Lặp lại danh sách phát.",
+        description: `Đã ${
           loop === 0
             ? "tắt"
             : loop === 1
@@ -27,10 +30,15 @@ module.exports = {
             : loop === 2
             ? "lặp lại bài hát hiện tại"
             : "lặp lại danh sách phát"
-        } lặp lại danh sách phát.`
-      );
+        } lặp lại danh sách phát.`,
+        authorName: user.globalName,
+        authoriconURL: user.displayAvatarURL(),
+      });
+
+      await interaction.deleteReply();
+      await interaction.channel.send({ embeds: [embed] });
     } catch (error) {
-      console.error(error);
+      console.error("loop.js error: ", error);
       return await interaction.editReply({
         content: "An error occurred while looping the queue.",
         ephemeral: true,

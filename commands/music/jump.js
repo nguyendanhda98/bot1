@@ -1,8 +1,9 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, MessageFlags } = require("discord.js");
 const {
   validateVoiceChannelRequirements,
 } = require("@utils/voiceChannelUtils");
 const { isQueueExists } = require("@utils/music/queueUtils");
+const { interactionEmbed } = require("@utils/embedTemplate");
 
 module.exports = {
   category: "music",
@@ -16,25 +17,34 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(distube, interaction) {
-    await interaction.deferReply();
-    if (!(await validateVoiceChannelRequirements(interaction))) return;
-
-    const queue = distube.getQueue(interaction);
-    if (!(await isQueueExists(queue, interaction))) return;
-
-    const index = interaction.options.getInteger("index");
-    const queueLength = queue.songs.length;
-
-    if (index === 0 || index > queueLength || index < -queueLength) {
-      await interaction.editReply("Invalid song index.");
-      return;
-    }
-
     try {
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+      if (!(await validateVoiceChannelRequirements(interaction))) return;
+
+      const queue = distube.getQueue(interaction);
+      if (!(await isQueueExists(queue, interaction))) return;
+
+      const index = interaction.options.getInteger("index");
+      const queueLength = queue.songs.length;
+
+      if (index === 0 || index > queueLength || index < -queueLength) {
+        await interaction.editReply("Invalid song index.");
+        return;
+      }
+
+      const embed = interactionEmbed({
+        title: "Jump to a song.",
+        description: `Jumped to song at index ${index}`,
+        authorName: user.globalName,
+        authoriconURL: user.displayAvatarURL(),
+      });
+
       await queue.jump(index);
-      await interaction.editReply(`Jumped to song at index ${index}`);
+
+      await interaction.deleteReply();
+      await interaction.channel.send({ embeds: [embed] });
     } catch (error) {
-      console.error(error);
+      console.error("jump.js error: ", error);
       await interaction.editReply(
         "An error occurred while jumping to the song."
       );

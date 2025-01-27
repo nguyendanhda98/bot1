@@ -13,7 +13,7 @@ module.exports = {
         try {
           await buttonCommand.execute(distube, interaction);
         } catch (error) {
-          console.error(error);
+          console.error("Button command error: ", error);
           await interaction.reply({
             content: "There was an error while executing this button action!",
             flags: MessageFlags.Ephemeral,
@@ -41,7 +41,7 @@ module.exports = {
           await command.execute(distube, interaction);
         } else await command.execute(interaction);
       } catch (error) {
-        console.error(error);
+        console.error("Interaction command error: ", error);
         if (interaction.replied || interaction.deferred) {
           await interaction.followUp({
             content: "There was an error while executing this command!",
@@ -64,7 +64,7 @@ module.exports = {
           await command.autocomplete(interaction);
         } else await command.autocomplete(interaction);
       } catch (error) {
-        console.error(error);
+        console.error("Interaction autocomplete error: ", error);
         await interaction.respond({
           type: 6,
           data: {

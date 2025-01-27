@@ -22,7 +22,6 @@ const client = new Client({
 const ytDlpPlugin = new YtDlpPlugin();
 const distube = new DisTube(client, {
   plugins: [ytDlpPlugin],
-  emitNewSongOnly: true,
   savePreviousSongs: true,
 });
 
@@ -62,6 +61,19 @@ for (const file of eventClientFiles) {
     client.on(event.name, (...args) => event.execute(distube, ...args));
   }
 }
+
+// Xử lý lỗi toàn cục
+process.on("uncaughtException", (error) => {
+  // console.error("Uncaught Exception:", error);
+  // Optionally, you can exit the process if needed
+  // process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  // console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  // Optionally, you can exit the process if needed
+  // process.exit(1);
+});
 
 const eventsDistubePath = path.join(__dirname, "events", "distube");
 const eventDistubeFiles = fs

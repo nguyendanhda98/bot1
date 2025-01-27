@@ -1,9 +1,12 @@
 const { Events } = require("distube");
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { songEmbed } = require("@utils/embedTemplate");
 
 module.exports = {
   name: Events.PLAY_SONG,
   execute(queue, song) {
+    const user = queue.distube.client.user;
+
     if (queue && queue.textChannel) {
       const pause = new ButtonBuilder()
         .setCustomId("pause")
@@ -11,9 +14,9 @@ module.exports = {
         .setStyle(ButtonStyle.Secondary);
 
       const play = new ButtonBuilder()
-        .setCustomId("play")
-        .setLabel("Play")
-        .setStyle(ButtonStyle.Success);
+        .setCustomId("resume")
+        .setLabel("Resume")
+        .setStyle(ButtonStyle.Secondary);
 
       const skip = new ButtonBuilder()
         .setCustomId("skip")
@@ -21,18 +24,32 @@ module.exports = {
         .setStyle(ButtonStyle.Primary);
 
       const stop = new ButtonBuilder()
-        .setCustomId("stop")
-        .setLabel("Stop")
+        .setCustomId("leave")
+        .setLabel("Leave")
         .setStyle(ButtonStyle.Danger);
 
-      const row = new ActionRowBuilder().addComponents(pause, play, skip, stop);
+      const nowPlaying = new ButtonBuilder()
+        .setCustomId("nowplaying")
+        .setLabel("Now Playing")
+        .setStyle(ButtonStyle.Success);
 
-      queue.textChannel.send({
-        content: `Now playing: ${song.name}`,
-        components: [row],
+      const row = new ActionRowBuilder().addComponents(
+        skip,
+        nowPlaying,
+        pause,
+        play,
+        stop
+      );
+
+      const embed = songEmbed({
+        authorName: user.globalName ? user.globalName : user.username,
+        authoriconURL: user.displayAvatarURL(),
+        song,
       });
+
+      queue.textChannel.send({ embeds: [embed], components: [row] });
     } else {
-      console.error("Queue or textChannel is undefined");
+      console.error(" PLAY_SONG error");
     }
   },
 };

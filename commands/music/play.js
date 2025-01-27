@@ -1,13 +1,14 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, MessageFlags } = require("discord.js");
 const YouTube = require("youtube-sr").default;
+const { interactionEmbed } = require("@utils/embedTemplate");
 
 const {
   isMemberInSameVoiceChannel,
   isMemberInVoiceChannel,
 } = require("@utils/voiceChannelUtils");
 
-let lastQueryTime = 0;
-const DEBOUNCE_TIME = 500; // 500ms
+// let lastQueryTime = 0;
+// const DEBOUNCE_TIME = 500; // 500ms
 
 module.exports = {
   category: "music",
@@ -44,41 +45,54 @@ module.exports = {
 
       await interaction.respond(choices);
     } catch (error) {
-      console.error(error);
+      console.error("play.js error: ", error);
       await interaction.respond([]);
     }
   },
   async execute(distube, interaction) {
-    await interaction.deferReply();
-    const member = interaction.member;
-    const botMember = interaction.guild.members.me;
-    const voiceChannelMember = member.voice.channel;
+    try {
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+      const member = interaction.member;
+      const botMember = interaction.guild.members.me;
+      const voiceChannelMember = member.voice.channel;
 
-    // Nếu người dùng không ở voice channel
-    if (!(await isMemberInVoiceChannel(interaction))) {
-      return;
-    }
-
-    if (botMember.voice.channelId) {
-      // Nếu người dùng không ở cùng voice channel với bot
-      if (!(await isMemberInSameVoiceChannel(interaction))) {
+      // Nếu người dùng không ở voice channel
+      if (!(await isMemberInVoiceChannel(interaction))) {
         return;
       }
-    }
 
-    const query = interaction.options.getString("song");
-    if (!query)
-      return interaction.editReply(
-        "Bạn cần cung cấp tên bài hát hoặc link youtube!"
-      );
+      if (botMember.voice.channelId) {
+        // Nếu người dùng không ở cùng voice channel với bot
+        if (!(await isMemberInSameVoiceChannel(interaction))) {
+          return;
+        }
+      }
 
-    try {
+      const query = interaction.options.getString("song");
+      if (!query)
+        return interaction.editReply(
+          "Bạn cần cung cấp tên bài hát hoặc link youtube!"
+        );
+
       //check if query is a link
       if (query.match(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/)) {
         await distube.play(voiceChannelMember, query, {
           textChannel: interaction.channel,
           member,
         });
+        const song = distube.getQueue(interaction).songs[0];
+
+        const embed = interactionEmbed({
+          title: "Thêm bài hát.",
+          description: `Đã thêm bài hát **${song.name}** - \`${song.formattedDuration}\` vào danh sách phát.`,
+          authorName: member.user.globalName
+            ? member.user.globalName
+            : member.user.username,
+          authoriconURL: member.user.displayAvatarURL(),
+        });
+
+        await interaction.deleteReply();
+        await interaction.channel.send({ embeds: [embed] });
       }
       // check if query is a playlist. Not supported yet
       else if (
@@ -99,10 +113,21 @@ module.exports = {
           textChannel: interaction.channel,
           member,
         });
+
+        const embed = interactionEmbed({
+          title: "Thêm bài hát.",
+          description: `Đã thêm bài hát **${song.title}** - \`${song.durationFormatted}\` vào danh sách phát.`,
+          authorName: member.user.globalName
+            ? member.user.globalName
+            : member.user.username,
+          authoriconURL: member.user.displayAvatarURL(),
+        });
+
+        await interaction.deleteReply();
+        await interaction.channel.send({ embeds: [embed] });
       }
-      return interaction.editReply("Đã thêm bài hát vào hàng chờ!");
     } catch (error) {
-      console.error(error);
+      console.error("play.js error: ", error);
       return interaction.editReply("Đã xảy ra lỗi khi phát nhạc!");
     }
   },
