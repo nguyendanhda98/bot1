@@ -3,6 +3,7 @@ const {
   validateVoiceChannelRequirements,
 } = require("@utils/voiceChannelUtils");
 const { isQueueExists } = require("@utils/music/queueUtils");
+const { triggerPlaySongEvent } = require("@utils/events/playsong");
 
 module.exports = {
   category: "music",
@@ -17,8 +18,12 @@ module.exports = {
       const queue = distube.getQueue(interaction);
       if (!(await isQueueExists(queue, interaction))) return;
 
-      queue.shuffle();
-      await interaction.editReply("Đã xáo trộn danh sách phát.");
+      const song = queue.songs[0];
+
+      await queue.shuffle();
+      await interaction.deleteReply();
+      await interaction.channel.send("Đã xáo trộn danh sách phát.");
+      triggerPlaySongEvent(distube, queue, song);
     } catch (error) {
       console.error("shuffle.js error: ", error);
       return await interaction.editReply({

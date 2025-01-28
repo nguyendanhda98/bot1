@@ -18,6 +18,8 @@ module.exports = {
       if (!(await isQueueExists(queue, interaction))) return;
 
       await queue.previous();
+      await interaction.deleteReply();
+      await interaction.channel.send("Đã chuyển đến bài hát trước đó!");
     } catch (error) {
       console.error("previous.js error: ", error);
       return await interaction.editReply({

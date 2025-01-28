@@ -4,6 +4,7 @@ const {
 } = require("@utils/voiceChannelUtils");
 const { isQueueExists } = require("@utils/music/queueUtils");
 const { interactionEmbed } = require("@utils/embedTemplate");
+const { triggerPlaySongEvent } = require("@utils/events/playsong");
 
 module.exports = {
   category: "music",
@@ -25,6 +26,7 @@ module.exports = {
       const queue = distube.getQueue(interaction);
       if (!(await isQueueExists(queue, interaction))) return;
 
+      const song = queue.songs[0];
       const index = interaction.options.getInteger("index");
       const queueLength = queue.songs.length;
 
@@ -44,6 +46,7 @@ module.exports = {
 
       await interaction.deleteReply();
       await interaction.channel.send({ embeds: [embed] });
+      triggerPlaySongEvent(distube, queue, song);
     } catch (error) {
       console.error("jump.js error: ", error);
       await interaction.editReply(

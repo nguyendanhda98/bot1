@@ -79,13 +79,13 @@ for (const file of eventClientFiles) {
 
 // Xử lý lỗi toàn cục
 process.on("uncaughtException", (error) => {
-  // console.error("Uncaught Exception:", error);
+  console.error("Uncaught Exception:");
   // Optionally, you can exit the process if needed
   // process.exit(1);
 });
 
 process.on("unhandledRejection", (reason, promise) => {
-  // console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  console.error("Unhandled Rejection at: ,reason: ");
   // Optionally, you can exit the process if needed
   // process.exit(1);
 });

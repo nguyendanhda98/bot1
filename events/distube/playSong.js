@@ -23,7 +23,7 @@ module.exports = {
         .setLabel("Skip")
         .setStyle(ButtonStyle.Primary);
 
-      const stop = new ButtonBuilder()
+      const leave = new ButtonBuilder()
         .setCustomId("leave")
         .setLabel("Leave")
         .setStyle(ButtonStyle.Danger);
@@ -31,11 +31,6 @@ module.exports = {
       const nowplaying = new ButtonBuilder()
         .setCustomId("nowplaying")
         .setLabel("Now Playing")
-        .setStyle(ButtonStyle.Success);
-
-      const autoplay = new ButtonBuilder()
-        .setCustomId("autoplay")
-        .setLabel("Auto play")
         .setStyle(ButtonStyle.Secondary);
 
       const row1 = new ActionRowBuilder().addComponents(
@@ -43,9 +38,41 @@ module.exports = {
         nowplaying,
         pause,
         play,
-        stop
+        leave
       );
-      const row2 = new ActionRowBuilder().addComponents(autoplay);
+
+      const autoplay = new ButtonBuilder()
+        .setCustomId("autoplay")
+        .setLabel("Auto play")
+        .setStyle(ButtonStyle.Secondary);
+
+      const loop = new ButtonBuilder()
+        .setCustomId("loop")
+        .setLabel("Loop")
+        .setStyle(ButtonStyle.Secondary);
+
+      const previous = new ButtonBuilder()
+        .setCustomId("previous")
+        .setLabel("Previous")
+        .setStyle(ButtonStyle.Secondary);
+
+      const queueBt = new ButtonBuilder()
+        .setCustomId("queue")
+        .setLabel("Queue")
+        .setStyle(ButtonStyle.Secondary);
+
+      const shuffle = new ButtonBuilder()
+        .setCustomId("shuffle")
+        .setLabel("Shuffle")
+        .setStyle(ButtonStyle.Secondary);
+
+      const row2 = new ActionRowBuilder().addComponents(
+        autoplay,
+        loop,
+        previous,
+        queueBt,
+        shuffle
+      );
 
       const embed = statusEmbed({
         queue,
