@@ -6,7 +6,9 @@ const path = require("node:path");
 const { Client, Collection, GatewayIntentBits } = require("discord.js");
 const { DisTube } = require("distube");
 const { YtDlpPlugin } = require("@distube/yt-dlp");
-
+const { YouTubePlugin } = require("@distube/youtube");
+const { SoundCloudPlugin } = require("@distube/soundcloud");
+const { DirectLinkPlugin } = require("@distube/direct-link");
 
 const token = process.env.TOKEN;
 
@@ -21,9 +23,21 @@ const client = new Client({
 
 // Create a new DisTube
 const ytDlpPlugin = new YtDlpPlugin();
+// nguyendanhdahah@gmail.com
+const cookies = JSON.parse(fs.readFileSync("cookies.json"));
+
+const youtubePlugin = new YouTubePlugin({
+  cookies,
+  ytdlOptions: {
+    lang: "vi",
+  },
+});
+const soundcloudPlugin = new SoundCloudPlugin();
+const directLinkPlugin = new DirectLinkPlugin();
 const distube = new DisTube(client, {
-  plugins: [ytDlpPlugin],
+  plugins: [youtubePlugin, soundcloudPlugin, directLinkPlugin, ytDlpPlugin],
   savePreviousSongs: true,
+  emitNewSongOnly: true,
 });
 
 client.commands = new Collection();

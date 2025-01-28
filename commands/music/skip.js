@@ -18,7 +18,7 @@ module.exports = {
       const queue = distube.getQueue(interaction);
       if (!(await isQueueExists(queue, interaction))) return;
 
-      if (queue.songs.length === 1) {
+      if (queue.songs.length === 1 && !queue.autoplay) {
         // Send an embed message
         const embed = interactionEmbed({
           authorName: interaction.user.globalName

@@ -1,6 +1,6 @@
 const { Events } = require("distube");
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const { songEmbed } = require("@utils/embedTemplate");
+const { statusEmbed } = require("@utils/embedTemplate");
 
 module.exports = {
   name: Events.PLAY_SONG,
@@ -28,26 +28,33 @@ module.exports = {
         .setLabel("Leave")
         .setStyle(ButtonStyle.Danger);
 
-      const nowPlaying = new ButtonBuilder()
+      const nowplaying = new ButtonBuilder()
         .setCustomId("nowplaying")
         .setLabel("Now Playing")
         .setStyle(ButtonStyle.Success);
 
-      const row = new ActionRowBuilder().addComponents(
+      const autoplay = new ButtonBuilder()
+        .setCustomId("autoplay")
+        .setLabel("Auto play")
+        .setStyle(ButtonStyle.Secondary);
+
+      const row1 = new ActionRowBuilder().addComponents(
         skip,
-        nowPlaying,
+        nowplaying,
         pause,
         play,
         stop
       );
+      const row2 = new ActionRowBuilder().addComponents(autoplay);
 
-      const embed = songEmbed({
+      const embed = statusEmbed({
+        queue,
         authorName: user.globalName ? user.globalName : user.username,
         authoriconURL: user.displayAvatarURL(),
         song,
       });
 
-      queue.textChannel.send({ embeds: [embed], components: [row] });
+      queue.textChannel.send({ embeds: [embed], components: [row1, row2] });
     } else {
       console.error(" PLAY_SONG error");
     }

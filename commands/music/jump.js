@@ -18,6 +18,7 @@ module.exports = {
     ),
   async execute(distube, interaction) {
     try {
+      const user = interaction.user;
       await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       if (!(await validateVoiceChannelRequirements(interaction))) return;
 
