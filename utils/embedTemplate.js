@@ -71,9 +71,9 @@ function statusEmbed({
       { name: "Likes", value: `${formatNumber(song.likes)} 👍`, inline: true }
     )
     .addFields(
-      { name: "Next Song", value: nextSong, inline: true },
       { name: "Autoplay", value: autoplayStatus, inline: true },
-      { name: "Loop", value: loopStatus, inline: true }
+      { name: "Loop", value: loopStatus, inline: true },
+      { name: "Next Song", value: nextSong, inline: true }
     );
 }
 

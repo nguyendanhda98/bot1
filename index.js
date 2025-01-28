@@ -9,6 +9,7 @@ const { YtDlpPlugin } = require("@distube/yt-dlp");
 const { YouTubePlugin } = require("@distube/youtube");
 const { SoundCloudPlugin } = require("@distube/soundcloud");
 const { DirectLinkPlugin } = require("@distube/direct-link");
+const { SpotifyPlugin } = require("@distube/spotify");
 
 const token = process.env.TOKEN;
 
@@ -34,8 +35,21 @@ const youtubePlugin = new YouTubePlugin({
 });
 const soundcloudPlugin = new SoundCloudPlugin();
 const directLinkPlugin = new DirectLinkPlugin();
+const spotifyPlugin = new SpotifyPlugin({
+  api: {
+    clientId: process.env.SPOTIFY_CLIENT_ID,
+    clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+    topTracksCountry: "VN",
+  },
+});
 const distube = new DisTube(client, {
-  plugins: [youtubePlugin, soundcloudPlugin, directLinkPlugin, ytDlpPlugin],
+  plugins: [
+    youtubePlugin,
+    soundcloudPlugin,
+    spotifyPlugin,
+    directLinkPlugin,
+    ytDlpPlugin,
+  ],
   savePreviousSongs: true,
   emitNewSongOnly: true,
 });
