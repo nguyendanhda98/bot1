@@ -83,6 +83,7 @@ module.exports = {
         const queue = distube.getQueue(interaction);
         if (!queue)
           return await interaction.editReply("Không tìm thấy bài hát!");
+        
         const song = queue.songs[0];
 
         const embed = interactionEmbed({

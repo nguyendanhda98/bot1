@@ -15,8 +15,8 @@ module.exports = {
     if (!(await validateVoiceChannelRequirements(interaction))) return;
 
     const queue = distube.getQueue(interaction);
-    const song = queue.songs[0];
     if (!(await isQueueExists(queue, interaction))) return;
+    const song = queue.songs[0];
 
     const autoplay = queue.toggleAutoplay();
 
